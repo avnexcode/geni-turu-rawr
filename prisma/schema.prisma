@@ -7,6 +7,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Todo {
+  id   String @id @default(cuid())
+  text String @db.VarChar(100)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("todos")
+}
+
 model Product {
   id          String    @id @default(cuid())
   name        String    @db.VarChar(50)
@@ -14,6 +24,9 @@ model Product {
   price       String    @db.VarChar(100)
   category    Category? @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   category_id String?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@map("products")
 }
@@ -23,6 +36,9 @@ model Category {
   name     String    @unique @db.VarChar(50)
   slug     String    @unique @db.VarChar(50)
   products Product[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@map("categories")
 }

@@ -4,19 +4,82 @@ import {
   CreateCategoryRequest,
   UpdateCategoryRequest,
 } from 'src/models/category.model';
+import { PaginationParams, PaginationResult } from 'src/models/web.model';
 import { PrismaService } from 'src/services/prisma.service';
 
 @Injectable()
 export class CatgeoryRepository {
   constructor(private prismaService: PrismaService) {}
-  async findAll(): Promise<Category[]> {
-    const categories = await this.prismaService.category.findMany({
-      include: {
-        products: true,
+  async findAll(params: PaginationParams): Promise<PaginationResult<Category>> {
+    const { page = 1, limit = 10, search = '' } = params;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prismaService.category.findMany({
+        where: {
+          OR: [
+            {
+              name: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+            {
+              slug: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+          ],
+        },
+        include: {
+          products: true,
+        },
+        skip,
+        take: limit,
+        orderBy: {
+          created_at: 'desc',
+        },
+      }),
+      this.prismaService.category.count({
+        where: {
+          OR: [
+            {
+              name: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+            {
+              slug: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+          ],
+        },
+      }),
+    ]);
+    const lastPage = Math.ceil(total / limit);
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        lastPage,
+        limit,
+      },
+    };
+  }
+
+  async findManyUniqueNames(names: string[]): Promise<Category[]> {
+    return this.prismaService.category.findMany({
+      where: {
+        name: {
+          in: names,
+        },
       },
     });
-
-    return categories;
   }
 
   async findUniqueId(id: string): Promise<Category | null> {
@@ -54,6 +117,16 @@ export class CatgeoryRepository {
     });
 
     return category;
+  }
+
+  async insertMany(
+    request: (CreateCategoryRequest & { slug: string })[],
+  ): Promise<number> {
+    const categories = await this.prismaService.category.createMany({
+      data: request,
+      skipDuplicates: true,
+    });
+    return categories.count;
   }
 
   async update(

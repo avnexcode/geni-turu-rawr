@@ -8,6 +8,7 @@ import {
 } from 'src/models/category.model';
 import { CategoryValidation } from 'src/validations/category.validation';
 import { SlugService } from 'src/services/slug.service';
+import { PaginationParams, PaginationResult } from 'src/models/web.model';
 
 @Injectable()
 export class CategoryService {
@@ -17,9 +18,8 @@ export class CategoryService {
     private slugService: SlugService,
   ) {}
 
-  async getAll(): Promise<Category[]> {
-    const categories = await this.categoryRepository.findAll();
-
+  async getAll(params: PaginationParams): Promise<PaginationResult<Category>> {
+    const categories = await this.categoryRepository.findAll(params);
     return categories;
   }
 
@@ -60,6 +60,39 @@ export class CategoryService {
       slug,
     });
     return category;
+  }
+
+  async createMany(requests: CreateCategoryRequest[]): Promise<number> {
+    const validatedRequests = requests.map((request) =>
+      this.validationService.validate(
+        CategoryValidation.CREATE_CATEGORY_REQUEST,
+        request,
+      ),
+    );
+
+    const names = validatedRequests.map((request) => request.name);
+    if (new Set(names).size !== names.length) {
+      throw new HttpException('Duplicate category names in request', 400);
+    }
+
+    const existingCategories =
+      await this.categoryRepository.findManyUniqueNames(names);
+    if (existingCategories.length > 0) {
+      throw new HttpException(
+        `Categories already exist: ${existingCategories.map((c) => c.name).join(', ')}`,
+        400,
+      );
+    }
+
+    const categoriesData = validatedRequests.map((request) => ({
+      ...request,
+      slug: this.slugService.generateSlug(request.name),
+    }));
+
+    const categoriesCreatedCount =
+      await this.categoryRepository.insertMany(categoriesData);
+
+    return categoriesCreatedCount;
   }
 
   async update(id: string, request: UpdateCategoryRequest): Promise<Category> {

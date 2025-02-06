@@ -8,6 +8,7 @@ import {
 import { ValidationService } from 'src/services/validation.service';
 import { ProductValidation } from '../../validations/product.validation';
 import { SlugService } from 'src/services/slug.service';
+import { PaginationParams, PaginationResult } from 'src/models/web.model';
 
 @Injectable()
 export class ProductService {
@@ -17,8 +18,8 @@ export class ProductService {
     private slugService: SlugService,
   ) {}
 
-  async getAll(): Promise<Product[]> {
-    const products = await this.productRepository.findAll();
+  async getAll(params: PaginationParams): Promise<PaginationResult<Product>> {
+    const products = await this.productRepository.findAll(params);
     return products;
   }
 
@@ -59,6 +60,36 @@ export class ProductService {
     return product;
   }
 
+  async createMany(requests: CreateProductRequest[]): Promise<number> {
+    const validatedRequests = requests.map((request) =>
+      this.validationService.validate(
+        ProductValidation.CREATE_PRODUCT_REQUEST,
+        request,
+      ),
+    );
+
+    const productsToCreate = await Promise.all(
+      validatedRequests.map(async (request) => {
+        let slug = this.slugService.generateSlug(request.name);
+        const slugExists = await this.productRepository.countSimilarSlug(slug);
+
+        if (slugExists > 0) {
+          slug = `${slug}-${slugExists + 1}`;
+        }
+
+        return {
+          ...request,
+          slug,
+        };
+      }),
+    );
+
+    const productsCreatedCount =
+      await this.productRepository.insertMany(productsToCreate);
+
+    return productsCreatedCount;
+  }
+
   async update(id: string, request: UpdateProductRequest): Promise<Product> {
     await this.getById(id);
 
@@ -67,21 +98,22 @@ export class ProductService {
       request,
     );
 
+    let product: Product;
+
     if (!validatedRequest.name) {
-      const product = await this.productRepository.update(id, validatedRequest);
-      return product;
+      product = await this.productRepository.update(id, validatedRequest);
+    } else {
+      const slug = await this.slugService.generateUniqueSlug(
+        validatedRequest.name,
+        this.productRepository,
+        id,
+      );
+
+      product = await this.productRepository.update(id, {
+        ...validatedRequest,
+        slug,
+      });
     }
-
-    const slug = await this.slugService.generateUniqueSlug(
-      validatedRequest.name,
-      this.productRepository,
-      id,
-    );
-
-    const product = await this.productRepository.update(id, {
-      ...validatedRequest,
-      slug,
-    });
 
     return product;
   }

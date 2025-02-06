@@ -5,14 +5,73 @@ import {
   UpdateProductRequest,
 } from '../../models/product.model';
 import { Injectable } from '@nestjs/common';
+import { PaginationParams, PaginationResult } from 'src/models/web.model';
 
 @Injectable()
 export class ProductRepository {
   constructor(private prismaService: PrismaService) {}
 
-  async findAll(): Promise<Product[]> {
-    const products = await this.prismaService.product.findMany();
-    return products;
+  async findAll(params: PaginationParams): Promise<PaginationResult<Product>> {
+    const { page = 1, limit = 10, search = '' } = params;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prismaService.product.findMany({
+        where: {
+          OR: [
+            {
+              name: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+            {
+              slug: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+          ],
+        },
+        include: {
+          category: true,
+        },
+        skip,
+        take: limit,
+        orderBy: {
+          created_at: 'desc',
+        },
+      }),
+      this.prismaService.product.count({
+        where: {
+          OR: [
+            {
+              name: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+            {
+              slug: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+          ],
+        },
+      }),
+    ]);
+
+    const lastPage = Math.ceil(total / limit);
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        lastPage,
+        limit,
+      },
+    };
   }
 
   async findUniqueId(id: string): Promise<Product | null> {
@@ -74,6 +133,16 @@ export class ProductRepository {
       data: request,
     });
     return product;
+  }
+
+  async insertMany(
+    request: (CreateProductRequest & { slug: string })[],
+  ): Promise<number> {
+    const products = await this.prismaService.product.createMany({
+      data: request,
+      skipDuplicates: true,
+    });
+    return products.count;
   }
 
   async update(
