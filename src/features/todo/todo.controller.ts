@@ -17,7 +17,7 @@ import {
 } from '@nestjs/common';
 import { Todo } from '@prisma/client';
 import { CreateTodoRequest, UpdateTodoRequest } from 'src/models/todo.model';
-import { PaginationResult, WebResponse } from 'src/models/web.model';
+import { QueryResult, WebResponse } from 'src/models/web.model';
 import { TodoService } from './todo.service';
 
 @Controller('todos')
@@ -34,7 +34,7 @@ export class TodoController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('search') search?: string,
-  ): Promise<WebResponse<PaginationResult<Todo>>> {
+  ): Promise<WebResponse<QueryResult<Todo>>> {
     const todos = await this.todoService.getAll({ page, limit, search });
     const message = this.responseMessageService.getAll('todo');
 
@@ -98,7 +98,7 @@ export class TodoController {
     @Body() request: UpdateTodoRequest,
   ): Promise<WebResponse<Todo>> {
     const todo = await this.todoService.update(id, request);
-    if (!request.text) {
+    if (!(request.text && request.status)) {
       throw new HttpException(`Required fields are missing`, 404);
     }
     const message = this.responseMessageService.put('todo');

@@ -15,7 +15,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { Category } from '@prisma/client';
-import { PaginationResult, WebResponse } from 'src/models/web.model';
+import { QueryResult, WebResponse } from 'src/models/web.model';
 import { CategoryService } from './category.service';
 import {
   CreateCategoryRequest,
@@ -37,7 +37,7 @@ export class CategoryController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('search') search?: string,
-  ): Promise<WebResponse<PaginationResult<Category>>> {
+  ): Promise<WebResponse<QueryResult<Category>>> {
     const categories = await this.categoryService.getAll({
       page,
       limit,

@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Todo } from '@prisma/client';
 import { CreateTodoRequest, UpdateTodoRequest } from 'src/models/todo.model';
-import { PaginationParams, PaginationResult } from 'src/models/web.model';
+import { QueryParams, QueryResult } from 'src/models/web.model';
 import { PrismaService } from 'src/services/prisma.service';
 
 @Injectable()
 export class TodoRepository {
   constructor(private prismaService: PrismaService) {}
 
-  async findAll(params: PaginationParams): Promise<PaginationResult<Todo>> {
+  async findAll(params: QueryParams): Promise<QueryResult<Todo>> {
     const { page = 1, limit = 10, search = '' } = params;
     const skip = (page - 1) * limit;
 
@@ -51,7 +51,7 @@ export class TodoRepository {
       meta: {
         total,
         page,
-        lastPage,
+        last_page: lastPage,
         limit,
       },
     };

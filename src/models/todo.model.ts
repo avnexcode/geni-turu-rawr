@@ -4,4 +4,5 @@ export class CreateTodoRequest {
 
 export class UpdateTodoRequest {
   text?: string;
+  status?: boolean;
 }

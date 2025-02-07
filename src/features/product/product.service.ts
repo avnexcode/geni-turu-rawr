@@ -8,7 +8,7 @@ import {
 import { ValidationService } from 'src/services/validation.service';
 import { ProductValidation } from '../../validations/product.validation';
 import { SlugService } from 'src/services/slug.service';
-import { PaginationParams, PaginationResult } from 'src/models/web.model';
+import { QueryParams, QueryResult } from 'src/models/web.model';
 
 @Injectable()
 export class ProductService {
@@ -18,7 +18,7 @@ export class ProductService {
     private slugService: SlugService,
   ) {}
 
-  async getAll(params: PaginationParams): Promise<PaginationResult<Product>> {
+  async getAll(params: QueryParams): Promise<QueryResult<Product>> {
     const products = await this.productRepository.findAll(params);
     return products;
   }

@@ -4,13 +4,13 @@ import {
   CreateCategoryRequest,
   UpdateCategoryRequest,
 } from 'src/models/category.model';
-import { PaginationParams, PaginationResult } from 'src/models/web.model';
+import { QueryParams, QueryResult } from 'src/models/web.model';
 import { PrismaService } from 'src/services/prisma.service';
 
 @Injectable()
 export class CatgeoryRepository {
   constructor(private prismaService: PrismaService) {}
-  async findAll(params: PaginationParams): Promise<PaginationResult<Category>> {
+  async findAll(params: QueryParams): Promise<QueryResult<Category>> {
     const { page = 1, limit = 10, search = '' } = params;
     const skip = (page - 1) * limit;
 
@@ -66,7 +66,7 @@ export class CatgeoryRepository {
       meta: {
         total,
         page,
-        lastPage,
+        last_page: lastPage,
         limit,
       },
     };

@@ -4,7 +4,7 @@ import { Todo } from '@prisma/client';
 import { CreateTodoRequest, UpdateTodoRequest } from 'src/models/todo.model';
 import { ValidationService } from 'src/services/validation.service';
 import { TodoValidation } from 'src/validations/todo.validation';
-import { PaginationParams, PaginationResult } from 'src/models/web.model';
+import { QueryParams, QueryResult } from 'src/models/web.model';
 
 @Injectable()
 export class TodoService {
@@ -13,7 +13,7 @@ export class TodoService {
     private validationService: ValidationService,
   ) {}
 
-  async getAll(params: PaginationParams): Promise<PaginationResult<Todo>> {
+  async getAll(params: QueryParams): Promise<QueryResult<Todo>> {
     const todos = await this.todoRepository.findAll(params);
     return todos;
   }

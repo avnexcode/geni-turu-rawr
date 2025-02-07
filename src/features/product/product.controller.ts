@@ -15,7 +15,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
-import { PaginationResult, WebResponse } from 'src/models/web.model';
+import { QueryResult, WebResponse } from 'src/models/web.model';
 import { Product } from '@prisma/client';
 import {
   CreateProductRequest,
@@ -37,7 +37,7 @@ export class ProductController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('search') search?: string,
-  ): Promise<WebResponse<PaginationResult<Product>>> {
+  ): Promise<WebResponse<QueryResult<Product>>> {
     const products = await this.productService.getAll({ page, limit, search });
     const message = this.responseMessageService.getAll('products');
     return {

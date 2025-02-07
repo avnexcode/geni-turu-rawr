@@ -4,23 +4,23 @@ export class WebResponse<T> {
   status: boolean;
   statusCode: number;
   message: string;
-  data: T;
+  data?: T;
   error?: string;
   details?: ZodError;
 }
 
-export class PaginationParams {
+export class QueryParams {
   page?: number;
   limit?: number;
   search?: string;
 }
 
-export class PaginationResult<T> {
+export class QueryResult<T> {
   data: T[];
   meta: {
     total: number;
     page: number;
-    lastPage: number;
+    last_page: number;
     limit: number;
   };
 }

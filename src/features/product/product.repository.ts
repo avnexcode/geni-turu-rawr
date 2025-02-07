@@ -5,13 +5,13 @@ import {
   UpdateProductRequest,
 } from '../../models/product.model';
 import { Injectable } from '@nestjs/common';
-import { PaginationParams, PaginationResult } from 'src/models/web.model';
+import { QueryParams, QueryResult } from 'src/models/web.model';
 
 @Injectable()
 export class ProductRepository {
   constructor(private prismaService: PrismaService) {}
 
-  async findAll(params: PaginationParams): Promise<PaginationResult<Product>> {
+  async findAll(params: QueryParams): Promise<QueryResult<Product>> {
     const { page = 1, limit = 10, search = '' } = params;
     const skip = (page - 1) * limit;
 
@@ -68,7 +68,7 @@ export class ProductRepository {
       meta: {
         total,
         page,
-        lastPage,
+        last_page: lastPage,
         limit,
       },
     };

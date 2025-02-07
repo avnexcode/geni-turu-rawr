@@ -8,7 +8,7 @@ import {
 } from 'src/models/category.model';
 import { CategoryValidation } from 'src/validations/category.validation';
 import { SlugService } from 'src/services/slug.service';
-import { PaginationParams, PaginationResult } from 'src/models/web.model';
+import { QueryParams, QueryResult } from 'src/models/web.model';
 
 @Injectable()
 export class CategoryService {
@@ -18,7 +18,7 @@ export class CategoryService {
     private slugService: SlugService,
   ) {}
 
-  async getAll(params: PaginationParams): Promise<PaginationResult<Category>> {
+  async getAll(params: QueryParams): Promise<QueryResult<Category>> {
     const categories = await this.categoryRepository.findAll(params);
     return categories;
   }
