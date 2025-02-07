@@ -36,6 +36,7 @@ export class TodoController {
     @Query('search') search?: string,
   ): Promise<WebResponse<QueryResult<Todo>>> {
     const todos = await this.todoService.getAll({ page, limit, search });
+
     const message = this.responseMessageService.getAll('todo');
 
     return {
@@ -51,7 +52,9 @@ export class TodoController {
   @Header('Content-Type', 'application/json')
   async getById(@Param('id') id: string): Promise<WebResponse<Todo>> {
     const todo = await this.todoService.getById(id);
+
     const message = this.responseMessageService.getById('todo');
+
     return {
       status: true,
       statusCode: 200,
@@ -65,7 +68,9 @@ export class TodoController {
   @Header('Content-Type', 'application/json')
   async post(@Body() request: CreateTodoRequest): Promise<WebResponse<Todo>> {
     const todo = await this.todoService.create(request);
+
     const message = this.responseMessageService.post('todo');
+
     return {
       status: true,
       statusCode: 201,
@@ -81,7 +86,9 @@ export class TodoController {
     @Body() request: CreateTodoRequest[],
   ): Promise<WebResponse<number>> {
     const todoCreatedCount = await this.todoService.createMany(request);
+
     const message = this.responseMessageService.post('todos');
+
     return {
       status: true,
       statusCode: 201,
@@ -97,11 +104,14 @@ export class TodoController {
     @Param('id') id: string,
     @Body() request: UpdateTodoRequest,
   ): Promise<WebResponse<Todo>> {
-    const todo = await this.todoService.update(id, request);
     if (!(request.text && request.status)) {
       throw new HttpException(`Required fields are missing`, 404);
     }
+
+    const todo = await this.todoService.update(id, request);
+
     const message = this.responseMessageService.put('todo');
+
     return {
       status: true,
       statusCode: 200,
@@ -118,7 +128,9 @@ export class TodoController {
     @Body() request: UpdateTodoRequest,
   ): Promise<WebResponse<Todo>> {
     const todo = await this.todoService.update(id, request);
+
     const message = this.responseMessageService.patch('todo');
+
     return {
       status: true,
       statusCode: 200,
@@ -132,7 +144,9 @@ export class TodoController {
   @Header('Content-Type', 'application/json')
   async delete(@Param('id') id: string): Promise<WebResponse<{ id: string }>> {
     const todoId = await this.todoService.delete(id);
+
     const message = this.responseMessageService.delete('todo');
+
     return {
       status: true,
       statusCode: 200,

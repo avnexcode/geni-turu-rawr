@@ -12,6 +12,7 @@ export class CatgeoryRepository {
   constructor(private prismaService: PrismaService) {}
   async findAll(params: QueryParams): Promise<QueryResult<Category>> {
     const { page = 1, limit = 10, search = '' } = params;
+
     const skip = (page - 1) * limit;
 
     const [data, total] = await Promise.all([
@@ -61,6 +62,7 @@ export class CatgeoryRepository {
       }),
     ]);
     const lastPage = Math.ceil(total / limit);
+
     return {
       data,
       meta: {
@@ -126,6 +128,7 @@ export class CatgeoryRepository {
       data: request,
       skipDuplicates: true,
     });
+
     return categories.count;
   }
 

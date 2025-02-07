@@ -11,10 +11,12 @@ import { ZodError } from 'zod';
 export class ErrorFilter implements ExceptionFilter {
   catch(exception: ZodError | HttpException | Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
+
     const response = ctx.getResponse<Response>();
 
     if (exception instanceof HttpException) {
       const status = exception.getStatus();
+
       const errorResponse = exception.getResponse();
 
       response.status(status).json({
@@ -33,7 +35,6 @@ export class ErrorFilter implements ExceptionFilter {
         details: exception.errors,
       });
     } else {
-      // Handle generic errors
       response.status(500).json({
         status: false,
         statusCode: 500,

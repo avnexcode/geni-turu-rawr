@@ -20,22 +20,27 @@ export class ProductService {
 
   async getAll(params: QueryParams): Promise<QueryResult<Product>> {
     const products = await this.productRepository.findAll(params);
+
     return products;
   }
 
   async getById(id: string): Promise<Product> {
     const product = await this.productRepository.findUniqueId(id);
+
     if (!product) {
       throw new HttpException(`Product with id : ${id} not found`, 404);
     }
+
     return product;
   }
 
   async getBySlug(slug: string): Promise<Product> {
     const product = await this.productRepository.findUniqueSlug(slug);
+
     if (!product) {
       throw new HttpException(`Product with slug : ${slug} not found`, 404);
     }
+
     return product;
   }
 
@@ -46,7 +51,9 @@ export class ProductService {
     );
 
     let slug = this.slugService.generateSlug(validatedRequest.name);
+
     const slugExists = await this.productRepository.countSimilarSlug(slug);
+
     const slugIndex = slugExists + 1;
 
     if (slugExists !== 0) {
@@ -57,6 +64,7 @@ export class ProductService {
       ...validatedRequest,
       slug,
     });
+
     return product;
   }
 
@@ -71,6 +79,7 @@ export class ProductService {
     const productsToCreate = await Promise.all(
       validatedRequests.map(async (request) => {
         let slug = this.slugService.generateSlug(request.name);
+
         const slugExists = await this.productRepository.countSimilarSlug(slug);
 
         if (slugExists > 0) {
@@ -120,7 +129,9 @@ export class ProductService {
 
   async delete(id: string): Promise<{ id: string }> {
     await this.getById(id);
+
     await this.productRepository.destroy(id);
+
     return { id };
   }
 }

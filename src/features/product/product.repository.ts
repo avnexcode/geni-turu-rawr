@@ -13,6 +13,7 @@ export class ProductRepository {
 
   async findAll(params: QueryParams): Promise<QueryResult<Product>> {
     const { page = 1, limit = 10, search = '' } = params;
+
     const skip = (page - 1) * limit;
 
     const [data, total] = await Promise.all([
@@ -63,6 +64,7 @@ export class ProductRepository {
     ]);
 
     const lastPage = Math.ceil(total / limit);
+
     return {
       data,
       meta: {
@@ -78,6 +80,7 @@ export class ProductRepository {
     const product = await this.prismaService.product.findUnique({
       where: { id },
     });
+
     return product;
   }
 
@@ -85,6 +88,7 @@ export class ProductRepository {
     const product = await this.prismaService.product.findUnique({
       where: { slug },
     });
+
     return product;
   }
 
@@ -123,6 +127,7 @@ export class ProductRepository {
         },
       },
     });
+
     return productsCount;
   }
 
@@ -132,6 +137,7 @@ export class ProductRepository {
     const product = await this.prismaService.product.create({
       data: request,
     });
+
     return product;
   }
 
@@ -142,6 +148,7 @@ export class ProductRepository {
       data: request,
       skipDuplicates: true,
     });
+
     return products.count;
   }
 
@@ -153,11 +160,13 @@ export class ProductRepository {
       where: { id },
       data: request,
     });
+
     return product;
   }
 
   async destroy(id: string): Promise<Product> {
     const product = await this.prismaService.product.delete({ where: { id } });
+
     return product;
   }
 }

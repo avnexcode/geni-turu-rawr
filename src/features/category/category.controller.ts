@@ -43,7 +43,9 @@ export class CategoryController {
       limit,
       search,
     });
+
     const message = this.responseMessageService.getAll('categories');
+
     return {
       status: true,
       statusCode: 200,
@@ -57,7 +59,9 @@ export class CategoryController {
   @Header('Content-Type', 'application/json')
   async getById(@Param('id') id: string): Promise<WebResponse<Category>> {
     const category = await this.categoryService.getById(id);
+
     const message = this.responseMessageService.getById('category');
+
     return {
       status: true,
       statusCode: 200,
@@ -73,7 +77,9 @@ export class CategoryController {
     @Body() request: CreateCategoryRequest,
   ): Promise<WebResponse<Category>> {
     const category = await this.categoryService.create(request);
+
     const message = this.responseMessageService.post('category');
+
     return {
       status: true,
       statusCode: 201,
@@ -90,7 +96,9 @@ export class CategoryController {
   ): Promise<WebResponse<number>> {
     const categoriesCreatedCount =
       await this.categoryService.createMany(request);
+
     const message = this.responseMessageService.post('categories');
+
     return {
       status: true,
       statusCode: 201,
@@ -106,11 +114,14 @@ export class CategoryController {
     @Param('id') id: string,
     @Body() request: UpdateCategoryRequest,
   ): Promise<WebResponse<Category>> {
-    const category = await this.categoryService.update(id, request);
     if (!request.name) {
       throw new HttpException('Required fields are missing', 404);
     }
+
+    const category = await this.categoryService.update(id, request);
+
     const message = this.responseMessageService.put('category');
+
     return {
       status: true,
       statusCode: 200,
@@ -127,7 +138,9 @@ export class CategoryController {
     @Body() request: UpdateCategoryRequest,
   ): Promise<WebResponse<Category>> {
     const category = await this.categoryService.update(id, request);
+
     const message = this.responseMessageService.patch('category');
+
     return {
       status: true,
       statusCode: 200,
@@ -141,7 +154,9 @@ export class CategoryController {
   @Header('Content-Type', 'application/json')
   async delete(@Param('id') id: string): Promise<WebResponse<{ id: string }>> {
     const category = await this.categoryService.delete(id);
+
     const message = this.responseMessageService.delete('category');
+
     return {
       status: true,
       statusCode: 200,

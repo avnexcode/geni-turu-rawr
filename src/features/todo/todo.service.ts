@@ -15,6 +15,7 @@ export class TodoService {
 
   async getAll(params: QueryParams): Promise<QueryResult<Todo>> {
     const todos = await this.todoRepository.findAll(params);
+
     return todos;
   }
 
@@ -40,6 +41,7 @@ export class TodoService {
     );
 
     const todo = await this.todoRepository.insert(validatedRequest);
+
     return todo;
   }
 
@@ -53,6 +55,7 @@ export class TodoService {
 
     const todosCreatedCount =
       await this.todoRepository.insertMany(validatedRequests);
+
     return todosCreatedCount;
   }
 
@@ -63,12 +66,15 @@ export class TodoService {
     );
 
     const todo = await this.todoRepository.update(id, validatedRequest);
+
     return todo;
   }
 
   async delete(id: string): Promise<{ id: string }> {
     await this.getById(id);
+
     await this.todoRepository.destroy(id);
+
     return { id };
   }
 }

@@ -1,10 +1,10 @@
 import { ZodError } from 'zod';
 
-export class WebResponse<T> {
+export class WebResponse<T = undefined> {
   status: boolean;
   statusCode: number;
   message: string;
-  data?: T;
+  data?: T extends undefined ? never : T;
   error?: string;
   details?: ZodError;
 }
@@ -17,10 +17,12 @@ export class QueryParams {
 
 export class QueryResult<T> {
   data: T[];
-  meta: {
-    total: number;
-    page: number;
-    last_page: number;
-    limit: number;
-  };
+  meta: QueryMeta;
+}
+
+export class QueryMeta {
+  total: number;
+  page: number;
+  last_page: number;
+  limit: number;
 }

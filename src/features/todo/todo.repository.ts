@@ -10,6 +10,7 @@ export class TodoRepository {
 
   async findAll(params: QueryParams): Promise<QueryResult<Todo>> {
     const { page = 1, limit = 10, search = '' } = params;
+
     const skip = (page - 1) * limit;
 
     const [data, total] = await Promise.all([
@@ -67,11 +68,13 @@ export class TodoRepository {
 
   async countMany(): Promise<number> {
     const todosCount = await this.prismaService.todo.count();
+
     return todosCount;
   }
 
   async insert(request: CreateTodoRequest): Promise<Todo> {
     const todo = await this.prismaService.todo.create({ data: request });
+
     return todo;
   }
 
@@ -80,6 +83,7 @@ export class TodoRepository {
       data: requeset,
       skipDuplicates: true,
     });
+
     return todos.count;
   }
 
@@ -94,6 +98,7 @@ export class TodoRepository {
 
   async destroy(id: string): Promise<Todo> {
     const todo = await this.prismaService.todo.delete({ where: { id } });
+
     return todo;
   }
 }

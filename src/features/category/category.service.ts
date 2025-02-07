@@ -20,22 +20,27 @@ export class CategoryService {
 
   async getAll(params: QueryParams): Promise<QueryResult<Category>> {
     const categories = await this.categoryRepository.findAll(params);
+
     return categories;
   }
 
   async getById(id: string): Promise<Category> {
     const category = await this.categoryRepository.findUniqueId(id);
+
     if (!category) {
       throw new HttpException(`Category with id : ${id} not found`, 404);
     }
+
     return category;
   }
 
   async getBySlug(slug: string): Promise<Category> {
     const category = await this.categoryRepository.findUniqueSlug(slug);
+
     if (!category) {
       throw new HttpException(`Category with slug : ${slug} not found`, 404);
     }
+
     return category;
   }
 
@@ -59,6 +64,7 @@ export class CategoryService {
       ...validatedRequest,
       slug,
     });
+
     return category;
   }
 
@@ -118,7 +124,9 @@ export class CategoryService {
 
   async delete(id: string): Promise<{ id: string }> {
     await this.getById(id);
+
     await this.categoryRepository.destroy(id);
+
     return { id };
   }
 }

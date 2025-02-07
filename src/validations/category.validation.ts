@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const createCategorySchema = z.object({
-  name: z.string().min(1).max(50),
+  name: z.string().min(1).max(50).toLowerCase(),
 });
 
 export const updateCategorySchema = createCategorySchema.partial();

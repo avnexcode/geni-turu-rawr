@@ -39,7 +39,9 @@ export class ProductController {
     @Query('search') search?: string,
   ): Promise<WebResponse<QueryResult<Product>>> {
     const products = await this.productService.getAll({ page, limit, search });
+
     const message = this.responseMessageService.getAll('products');
+
     return {
       status: true,
       statusCode: 200,
@@ -53,7 +55,9 @@ export class ProductController {
   @Header('Content-Type', 'application/json')
   async getById(@Param('id') id: string): Promise<WebResponse<Product>> {
     const product = await this.productService.getById(id);
+
     const message = this.responseMessageService.getById('product');
+
     return {
       status: true,
       statusCode: 200,
@@ -69,7 +73,9 @@ export class ProductController {
     @Body() request: CreateProductRequest,
   ): Promise<WebResponse<Product>> {
     const product = await this.productService.create(request);
+
     const message = this.responseMessageService.post('product');
+
     return {
       status: true,
       statusCode: 200,
@@ -85,7 +91,9 @@ export class ProductController {
     @Body() request: CreateProductRequest[],
   ): Promise<WebResponse<number>> {
     const productsCreateCount = await this.productService.createMany(request);
+
     const message = this.responseMessageService.post('products');
+
     return {
       status: true,
       statusCode: 200,
@@ -101,8 +109,11 @@ export class ProductController {
     if (!(request.name && request.price)) {
       throw new HttpException('Required fields are missing', 404);
     }
+
     const product = await this.productService.update(id, request);
+
     const message = this.responseMessageService.put('product');
+
     return {
       status: true,
       statusCode: 200,
@@ -119,7 +130,9 @@ export class ProductController {
     @Body() request: UpdateProductRequest,
   ): Promise<WebResponse<Product>> {
     const product = await this.productService.update(id, request);
+
     const message = this.responseMessageService.patch('product');
+
     return {
       status: true,
       statusCode: 200,
@@ -133,7 +146,9 @@ export class ProductController {
   @Header('Content-Type', 'application/json')
   async delete(@Param('id') id: string): Promise<WebResponse<{ id: string }>> {
     const product = await this.productService.delete(id);
+
     const message = this.responseMessageService.delete('product');
+
     return {
       status: true,
       statusCode: 200,
