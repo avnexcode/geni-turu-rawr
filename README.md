@@ -24,7 +24,7 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository. API ini dibuat untuk sebuah tutorial ngeCRUD - ngeCRUD dengan NextJS. Jadi wajar kalau tidak ada bagus - bagusnya dan terlihat seperti pemula, tapi memang pemula sih.
 
 ## Project setup
 
