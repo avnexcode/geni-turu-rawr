@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const createProductSchema = z.object({
   name: z.string().min(1).max(50).toLowerCase(),
   price: z.string().min(1).max(50),
+  image: z.string().url().min(1).max(150).optional(),
   category_id: z.string().optional(),
 });
 

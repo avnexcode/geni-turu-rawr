@@ -24,6 +24,7 @@ model Product {
   name        String    @db.VarChar(50)
   slug        String    @unique @db.VarChar(50)
   price       String    @db.VarChar(100)
+  image       String?   @db.VarChar(150)
   category    Category? @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   category_id String?
 
